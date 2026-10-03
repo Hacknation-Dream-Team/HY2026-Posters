@@ -1,31 +1,33 @@
 <!DOCTYPE html>
 <html lang="pl">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kreator Plakatów (MapLibre & Schrony)</title>
-    
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
+
     <!-- MapLibre GL JS -->
     <link href="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.css" rel="stylesheet" />
     <script src="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.js"></script>
-    
+
     <!-- html2canvas -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" crossorigin="anonymous"
+        referrerpolicy="no-referrer"></script>
+
     <!-- jsPDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
     <!-- Fonty -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 
-<style>
+    <style>
         body {
             font-family: 'Inter', sans-serif;
             margin: 0;
-            overflow: hidden; 
+            overflow: hidden;
             background-color: #f3f4f6;
             display: flex;
             justify-content: center;
@@ -56,30 +58,36 @@
         }
 
         .hazard-stripes {
-            background: repeating-linear-gradient(
-                45deg,
-                #ef4444,
-                #ef4444 10px,
-                #ffffff 10px,
-                #ffffff 20px
-            );
+            background: repeating-linear-gradient(45deg,
+                    #ef4444,
+                    #ef4444 10px,
+                    #ffffff 10px,
+                    #ffffff 20px);
         }
 
-        .maplibregl-ctrl-bottom-right, 
+        .maplibregl-ctrl-bottom-right,
         .maplibregl-ctrl-bottom-left {
             transform: scale(0.7);
             transform-origin: bottom right;
         }
 
-        #loader { display: none; }
+        #loader {
+            display: none;
+        }
     </style>
 </head>
+
 <body class="bg-gray-100 flex h-screen w-full">
 
-    <aside class="w-full md:w-1/3 lg:w-1/4 bg-gray-900 text-white p-6 flex flex-col h-full overflow-y-auto border-r-4 border-red-600 shadow-2xl z-10 relative">
+    <aside
+        class="w-full md:w-1/3 lg:w-1/4 bg-gray-900 text-white p-6 flex flex-col h-full overflow-y-auto border-r-4 border-red-600 shadow-2xl z-10 relative">
         <div class="mb-6">
             <h1 class="text-2xl font-bold uppercase tracking-wide flex items-center gap-2 text-white">
-                <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
+                    </path>
+                </svg>
                 Generator Map
             </h1>
             <p class="text-gray-400 text-sm mt-1">Schrony & Miejsca Ukrycia</p>
@@ -90,93 +98,142 @@
             <div>
                 <label class="block text-sm font-semibold mb-1 text-gray-300">Wyszukaj lokalizację / miasto</label>
                 <div class="flex gap-2">
-                    <input type="text" id="input-location" class="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded focus:outline-none focus:border-red-500 text-white" placeholder="np. Poznań, Warszawska 10">
-                    <button id="btn-search-location" type="button" class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded text-white font-bold transition-colors flex items-center justify-center">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    <input type="text" id="input-location"
+                        class="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded focus:outline-none focus:border-red-500 text-white"
+                        placeholder="np. Poznań, Warszawska 10">
+                    <button id="btn-search-location" type="button"
+                        class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded text-white font-bold transition-colors flex items-center justify-center">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
                     </button>
                 </div>
                 <p id="location-error" class="text-xs text-red-400 mt-1 hidden"></p>
             </div>
 
             <!-- STATUS ŁADOWANIA SCHRONÓW -->
-            <div class="p-3 bg-gray-800 rounded border border-gray-700 text-xs text-gray-300 flex items-center justify-between">
+            <div
+                class="p-3 bg-gray-800 rounded border border-gray-700 text-xs text-gray-300 flex items-center justify-between">
                 <span>Status bazy schronów:</span>
                 <span id="shelters-status" class="font-semibold text-yellow-400">Oczekiwanie...</span>
             </div>
 
-            <div class="p-3 bg-gray-800 rounded border border-gray-700 text-xs text-gray-400">
-                Wpisz lokalizację powyżej, a następnie dostosuj dokładny kadr mapy. Schrony są oznaczone symbolem obrony cywilnej.
+            <!-- STATUS PINEZKI -->
+            <div class="p-3 bg-gray-800 rounded border border-gray-700 text-xs text-gray-300">
+                <div class="flex items-center justify-between mb-1.5">
+                    <span class="font-semibold flex items-center gap-1.5 text-white">
+                        <svg class="w-4 h-4 text-red-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
+                                clip-rule="evenodd"></path>
+                        </svg>
+                        Pinezka Twojego adresu:
+                    </span>
+                    <button id="btn-remove-pin" type="button"
+                        class="text-red-400 hover:text-red-300 underline text-[11px] hidden cursor-pointer">Usuń
+                        pinezkę</button>
+                </div>
+                <div id="pin-status" class="text-gray-400">
+                    Kliknij na mapie, aby postawić pinezkę (Twój budynek / adres).
+                </div>
+            </div>
+
+            <div class="p-3 bg-gray-800 rounded border border-gray-700 text-xs text-gray-400 space-y-1">
+                <p><strong class="text-gray-300">Przesuwanie widoku:</strong> naciśnij i przytrzymaj lewy przycisk
+                    myszy.</p>
+                <p><strong class="text-gray-300">Pinezka adresu:</strong> naciśnij przycisk myszy w wybranym miejscu na
+                    mapie (dostępna jest jedna pinezka).</p>
             </div>
         </div>
 
         <div class="mt-6 pt-4 border-t border-gray-700">
-            <button id="btn-download" class="w-full bg-red-600 hover:bg-red-700 transition-colors text-white font-bold py-3 px-4 rounded shadow-lg flex justify-center items-center gap-2 group relative overflow-hidden">
+            <button id="btn-download"
+                class="w-full bg-red-600 hover:bg-red-700 transition-colors text-white font-bold py-3 px-4 rounded shadow-lg flex justify-center items-center gap-2 group relative overflow-hidden">
                 <span id="btn-text">Pobierz Plakat (PDF)</span>
-                <svg id="btn-icon" class="w-5 h-5 group-hover:translate-y-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                
-                <svg id="loader" class="animate-spin h-5 w-5 text-white absolute" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <svg id="btn-icon" class="w-5 h-5 group-hover:translate-y-1 transition-transform" fill="none"
+                    stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                </svg>
+
+                <svg id="loader" class="animate-spin h-5 w-5 text-white absolute" xmlns="http://www.w3.org/2000/svg"
+                    fill="none" viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    <path class="opacity-75" fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                    </path>
                 </svg>
             </button>
         </div>
     </aside>
 
     <main class="w-full md:w-2/3 lg:w-3/4 p-4 bg-gray-300 overflow-y-auto flex justify-center items-start">
-        
+
         <!-- Podgląd plakatu -->
         <div id="scaler-wrapper" class="a4-scaler-wrapper">
-        <div id="poster-preview" class="a4-container bg-white relative flex flex-col border border-gray-200">
-            
-            <div class="hazard-stripes h-4 w-full flex-shrink-0"></div>
-            
-            <!-- Stały nagłówek plakatu -->
-            <div class="px-8 py-6 bg-white text-center flex-shrink-0">
-                <h2 id="poster-title" class="text-3xl lg:text-4xl font-extrabold text-gray-900 uppercase leading-tight tracking-tight">
-                    Gdzie się ukryć?
-                </h2>
-                <h3 id="poster-subtitle" class="font-bold text-red-600 uppercase mt-1">
-                    Mapa okolicznych schronów na wypadek zagrożenia atakiem z powietrza
-                </h3>
-            </div>
+            <div id="poster-preview" class="a4-container bg-white relative flex flex-col border border-gray-200">
 
-            <!-- Kontener mapy -->
-            <div id="map-container" class="flex-grow w-full relative z-0 border-y-4 border-gray-900">
-                <div id="map" class="absolute inset-0 w-full h-full bg-gray-100"></div>
-            </div>
+                <div class="hazard-stripes h-4 w-full flex-shrink-0"></div>
 
-            <!-- Stopka z instrukcjami i adresem -->
-            <div class="bg-gray-50 px-8 py-6 flex flex-col justify-center min-h-[22%] relative flex-shrink-0">
-                <!-- Adres z pinezką -->
-                <div class="mb-3 flex items-center gap-2 text-red-600 font-bold text-base">
-                    <svg class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path>
-                    </svg>
-                    <span id="poster-address" class="uppercase tracking-wide text-gray-900 text-sm">Adres: Wyszukaj lokalizację na mapie</span>
+                <!-- Stały nagłówek plakatu -->
+                <div class="px-8 py-6 bg-white text-center flex-shrink-0">
+                    <h2 id="poster-title"
+                        class="text-3xl lg:text-4xl font-extrabold text-gray-900 uppercase leading-tight tracking-tight">
+                        Gdzie się ukryć?
+                    </h2>
+                    <h3 id="poster-subtitle" class="font-bold text-red-600 uppercase mt-1">
+                        Mapa okolicznych schronów na wypadek zagrożenia atakiem z powietrza
+                    </h3>
                 </div>
 
-                <h4 class="text-lg font-bold text-gray-900 mb-2 uppercase flex items-center gap-2">
-                    <svg class="w-5 h-5 text-red-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
-                    Instrukcje:
-                </h4>
-                <p id="poster-instructions" class="text-lg font-semibold text-gray-800 leading-snug whitespace-pre-wrap break-words relative z-10">W razie ogłoszenia alarmu niezwłocznie udaj się do wyznaczonych schronów. 
-Zabierz niezbędne dokumenty tożsamości, zapas wody, leki oraz radio na baterie.</p>
-                
-                <div class="mt-4 flex justify-between items-end border-t-2 border-gray-200 pt-3">
-                     <span class="text-xs font-bold text-gray-500 tracking-widest uppercase">Zarządzanie Kryzysowe RP</span>
-                     <span class="text-xs font-bold text-gray-500" id="current-date"></span>
+                <!-- Kontener mapy -->
+                <div id="map-container" class="flex-grow w-full relative z-0 border-y-4 border-gray-900">
+                    <div id="map" class="absolute inset-0 w-full h-full bg-gray-100"></div>
                 </div>
+
+                <!-- Stopka z instrukcjami i adresem -->
+                <div class="bg-gray-50 px-8 py-6 flex flex-col justify-center min-h-[22%] relative flex-shrink-0">
+                    <!-- Adres z pinezką -->
+                    <div class="mb-3 flex items-center gap-2 text-red-600 font-bold text-base">
+                        <svg class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
+                                clip-rule="evenodd"></path>
+                        </svg>
+                        <span id="poster-address" class="uppercase tracking-wide text-gray-900 text-sm">Adres: Kliknij
+                            na mapie, aby postawić pinezkę</span>
+                    </div>
+
+                    <h4 class="text-lg font-bold text-gray-900 mb-2 uppercase flex items-center gap-2">
+                        <svg class="w-5 h-5 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                                clip-rule="evenodd"></path>
+                        </svg>
+                        Instrukcje:
+                    </h4>
+                    <p id="poster-instructions"
+                        class="text-lg font-semibold text-gray-800 leading-snug whitespace-pre-wrap break-words relative z-10">
+                        W razie ogłoszenia alarmu niezwłocznie udaj się do wyznaczonych schronów.
+                        Zabierz niezbędne dokumenty tożsamości, zapas wody, leki oraz radio na baterie.</p>
+
+                    <div class="mt-4 flex justify-between items-end border-t-2 border-gray-200 pt-3">
+                        <span class="text-xs font-bold text-gray-500 tracking-widest uppercase">Zarządzanie Kryzysowe
+                            RP</span>
+                        <span class="text-xs font-bold text-gray-500" id="current-date"></span>
+                    </div>
+                </div>
+
+                <div class="hazard-stripes h-4 w-full flex-shrink-0"></div>
             </div>
-            
-            <div class="hazard-stripes h-4 w-full flex-shrink-0"></div>
         </div>
-    </div>
 
     </main>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            
+
             // 1. Ustawienie aktualnej daty
             const dateStr = new Date().toLocaleDateString('pl-PL');
             document.getElementById('current-date').innerText = `DATA WYDRUKU: ${dateStr}`;
@@ -213,6 +270,7 @@ Zabierz niezbędne dokumenty tożsamości, zapas wody, leki oraz radio na bateri
                 preserveDrawingBuffer: true,
                 attributionControl: false
             });
+            window.map = map;
 
             map.on('error', (e) => {
                 if (e && e.error && e.error.message && e.error.message.includes('style.json')) {
@@ -240,7 +298,7 @@ Zabierz niezbędne dokumenty tożsamości, zapas wody, leki oraz radio na bateri
                     // 1. Pobranie pliku GeoJSON
                     const response = await fetch('./schrony.geojson');
                     if (!response.ok) throw new Error("Nie znaleziono pliku schrony.geojson");
-                    
+
                     const data = await response.json();
 
                     // 2. Konwersja SVG na PNG za pomocą Canvas (wymóg MapLibre)
@@ -250,7 +308,7 @@ Zabierz niezbędne dokumenty tożsamości, zapas wody, leki oraz radio na bateri
                           <polygon points="24,10 38,36 10,36" fill="#2563eb"/>
                         </svg>
                     `;
-                    
+
                     const pngDataUrl = await new Promise((resolve, reject) => {
                         const img = new Image();
                         img.onload = () => {
@@ -365,13 +423,203 @@ Zabierz niezbędne dokumenty tożsamości, zapas wody, leki oraz radio na bateri
             });
 
             // =========================================================================
-            // 4. GEOKODOWANIE / WYSZUKIWARKA LOKALIZACJI (Nominatim)
+            // 4. OBSŁUGA PINEZKI ADRESU (JEDNA PINEZKA NA MAPIE)
             // =========================================================================
+            let pushpinMarker = null;
+            let clusterClickHandled = false;
+            const posterAddress = document.getElementById('poster-address');
+            const pinStatus = document.getElementById('pin-status');
+            const removePinBtn = document.getElementById('btn-remove-pin');
             const locationInput = document.getElementById('input-location');
             const searchBtn = document.getElementById('btn-search-location');
             const locationError = document.getElementById('location-error');
-            const posterAddress = document.getElementById('poster-address');
 
+            // Oblicza dokładne współrzędne geograficzne z uwzględnieniem skalowania CSS (transform: scale)
+            function getMapCoordinatesFromEvent(originalEvent) {
+                const canvas = map.getCanvas();
+                const rect = canvas.getBoundingClientRect();
+                if (!rect.width || !rect.height) return null;
+
+                const scaleX = canvas.clientWidth / rect.width;
+                const scaleY = canvas.clientHeight / rect.height;
+                const canvasX = (originalEvent.clientX - rect.left) * scaleX;
+                const canvasY = (originalEvent.clientY - rect.top) * scaleY;
+
+                return map.unproject([canvasX, canvasY]);
+            }
+
+            // Tworzy element wizualny pinezki z etykietą i cieniem
+            function createPushpinElement() {
+                const el = document.createElement('div');
+                el.className = 'custom-user-pushpin flex flex-col items-center pointer-events-none select-none';
+                el.innerHTML = `
+                    <div style="
+                        background-color: #0f172a;
+                        color: #ffffff;
+                        font-size: 10px;
+                        font-weight: 800;
+                        letter-spacing: 0.05em;
+                        padding: 2px 8px;
+                        border-radius: 9999px;
+                        border: 2px solid #ef4444;
+                        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+                        white-space: nowrap;
+                        margin-bottom: 2px;
+                        text-transform: uppercase;
+                    ">Tu jesteś</div>
+                    <svg width="34" height="46" viewBox="0 0 34 46" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5));">
+                        <path d="M17 0C7.611 0 0 7.611 0 17C0 29.75 17 46 17 46C17 46 34 29.75 34 17C34 7.611 26.389 0 17 0Z" fill="#dc2626"/>
+                        <path d="M17 1C8.163 1 1 8.163 1 17C1 28.9 16.5 44.5 17 45C17.5 44.5 33 28.9 33 17C33 8.163 25.837 1 17 1Z" stroke="#ffffff" stroke-width="2"/>
+                        <circle cx="17" cy="17" r="6" fill="#ffffff"/>
+                        <circle cx="17" cy="17" r="3" fill="#dc2626"/>
+                    </svg>
+                `;
+                return el;
+            }
+
+            function updateAddressUI(formattedAddress) {
+                if (posterAddress) {
+                    posterAddress.innerText = `Adres: ${formattedAddress}`;
+                }
+                if (pinStatus) {
+                    pinStatus.innerText = formattedAddress;
+                    pinStatus.className = 'text-green-400 font-semibold';
+                }
+                if (removePinBtn) {
+                    removePinBtn.classList.remove('hidden');
+                }
+            }
+
+            // Ustawia lub aktualizuje pojedynczą pinezkę na mapie
+            function setPushpin(lngLat, addressText = null) {
+                const lng = typeof lngLat.lng === 'number' ? lngLat.lng : lngLat[0];
+                const lat = typeof lngLat.lat === 'number' ? lngLat.lat : lngLat[1];
+
+                if (!pushpinMarker) {
+                    const el = createPushpinElement();
+                    pushpinMarker = new maplibregl.Marker({
+                        element: el,
+                        anchor: 'bottom'
+                    })
+                        .setLngLat([lng, lat])
+                        .addTo(map);
+                } else {
+                    pushpinMarker.setLngLat([lng, lat]);
+                }
+
+                if (addressText) {
+                    updateAddressUI(addressText);
+                } else {
+                    reverseGeocode(lat, lng);
+                }
+            }
+
+            // Usunięcie pinezki
+            function removePushpin() {
+                if (pushpinMarker) {
+                    pushpinMarker.remove();
+                    pushpinMarker = null;
+                }
+                if (posterAddress) {
+                    posterAddress.innerText = 'Adres: Kliknij na mapie, aby postawić pinezkę';
+                }
+                if (pinStatus) {
+                    pinStatus.innerText = 'Kliknij na mapie, aby postawić pinezkę (Twój budynek / adres).';
+                    pinStatus.className = 'text-gray-400';
+                }
+                if (removePinBtn) {
+                    removePinBtn.classList.add('hidden');
+                }
+            }
+
+            if (removePinBtn) {
+                removePinBtn.addEventListener('click', removePushpin);
+            }
+
+            // Wyszukiwanie adresu na podstawie współrzędnych geograficznych (Reverse Geocoding)
+            async function reverseGeocode(lat, lon) {
+                if (posterAddress) {
+                    posterAddress.innerText = 'Adres: Sprawdzanie adresu...';
+                }
+                if (pinStatus) {
+                    pinStatus.innerText = 'Wyszukiwanie adresu...';
+                    pinStatus.className = 'text-yellow-400';
+                }
+
+                try {
+                    const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18&addressdetails=1`, {
+                        headers: { 'Accept-Language': 'pl' }
+                    });
+                    const data = await response.json();
+
+                    let resolved = '';
+                    if (data && data.address) {
+                        const a = data.address;
+                        const street = a.road || a.pedestrian || a.street || a.neighbourhood || '';
+                        const house = a.house_number || '';
+                        const city = a.city || a.town || a.village || a.municipality || '';
+                        const parts = [];
+                        if (street) parts.push(house ? `${street} ${house}` : street);
+                        if (city && !parts.includes(city)) parts.push(city);
+                        resolved = parts.join(', ');
+                    }
+                    if (!resolved && data && data.display_name) {
+                        resolved = data.display_name.split(',').slice(0, 3).join(',');
+                    }
+                    if (!resolved) {
+                        resolved = `${lat.toFixed(5)}, ${lon.toFixed(5)}`;
+                    }
+
+                    updateAddressUI(resolved);
+                } catch (err) {
+                    console.warn('Błąd reverse geocode:', err);
+                    const coordsFallback = `${lat.toFixed(5)}, ${lon.toFixed(5)}`;
+                    updateAddressUI(coordsFallback);
+                }
+            }
+
+            // Kliknięcie w klastry schronów przybliża widok klastra
+            map.on('click', 'clusters', (e) => {
+                clusterClickHandled = true;
+                setTimeout(() => { clusterClickHandled = false; }, 100);
+
+                const features = map.queryRenderedFeatures(e.point, { layers: ['clusters'] });
+                if (!features || !features.length) return;
+                const clusterId = features[0].properties.cluster_id;
+                map.getSource('schrony-local').getClusterExpansionZoom(clusterId, (err, zoom) => {
+                    if (err) return;
+                    map.easeTo({
+                        center: features[0].geometry.coordinates,
+                        zoom: zoom
+                    });
+                });
+            });
+
+            map.on('mouseenter', 'clusters', () => {
+                map.getCanvas().style.cursor = 'pointer';
+            });
+            map.on('mouseleave', 'clusters', () => {
+                map.getCanvas().style.cursor = '';
+            });
+
+            // Dodawanie / przesuwanie pinezki za pomocą naciśnięcia przycisku myszy
+            // (Przeciąganie z przytrzymaniem przesuwa widok mapy, a pojedyncze naciśnięcie stawia pinezkę)
+            map.on('click', (e) => {
+                if (clusterClickHandled) return;
+                if (e.originalEvent && e.originalEvent.button !== 0) return;
+
+                let coords = null;
+                if (e.originalEvent) {
+                    coords = getMapCoordinatesFromEvent(e.originalEvent);
+                }
+                if (!coords) {
+                    coords = e.lngLat;
+                }
+
+                setPushpin(coords);
+            });
+
+            // Wyszukiwanie adresu (Nominatim)
             async function searchLocation() {
                 const query = locationInput.value.trim();
                 if (!query) return;
@@ -390,15 +638,13 @@ Zabierz niezbędne dokumenty tożsamości, zapas wody, leki oraz radio na bateri
                         const lat = parseFloat(data[0].lat);
                         const lon = parseFloat(data[0].lon);
                         const displayName = data[0].display_name;
+                        const shortAddress = displayName.split(',').slice(0, 3).join(',');
 
-                        if (posterAddress) {
-                            const shortAddress = displayName.split(',').slice(0, 3).join(',');
-                            posterAddress.innerText = `Adres: ${shortAddress}`;
-                        }
+                        setPushpin([lon, lat], shortAddress);
 
                         map.flyTo({
                             center: [lon, lat],
-                            zoom: 15,
+                            zoom: 17,
                             essential: true
                         });
                     } else {
@@ -427,7 +673,7 @@ Zabierz niezbędne dokumenty tożsamości, zapas wody, leki oraz radio na bateri
             // 5. GENEROWANIE PLIKU PDF (jsPDF + html2canvas)
             // =========================================================================
             const downloadBtn = document.getElementById('btn-download');
-            
+
             downloadBtn.addEventListener('click', async () => {
                 downloadBtn.disabled = true;
                 downloadBtn.classList.add('opacity-75', 'cursor-not-allowed');
@@ -481,13 +727,13 @@ Zabierz niezbędne dokumenty tożsamości, zapas wody, leki oraz radio na bateri
         function scaleA4() {
             const wrapper = document.getElementById('scaler-wrapper');
             const poster = document.getElementById('poster-preview');
-            
+
             // Standard A4 reference size in px at ~96 DPI
             const targetWidth = 794;
-            
+
             const scale = wrapper.clientWidth / targetWidth;
             poster.style.transform = `scale(${scale})`;
-            
+
             // Re-render MapLibre/Mapbox map canvas if present
             if (window.map && typeof window.map.resize === 'function') {
                 window.map.resize();
@@ -498,4 +744,5 @@ Zabierz niezbędne dokumenty tożsamości, zapas wody, leki oraz radio na bateri
         window.addEventListener('DOMContentLoaded', scaleA4);
     </script>
 </body>
+
 </html>
