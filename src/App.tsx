@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import type { LocationData, ShelterData, PosterConfig } from './types/poster';
 import { findNearestShelter } from './services/osmService';
 import { PosterPreview } from './components/PosterPreview';
@@ -6,7 +6,10 @@ import { FormPanel } from './components/FormPanel';
 import { Header } from './components/Header';
 import { Footer } from './components/Footer';
 import confetti from 'canvas-confetti';
-import { Sparkles, Printer, Eye, RefreshCw } from 'lucide-react';
+import { Sparkles, Printer, Eye, RefreshCw, Download, Loader2 } from 'lucide-react';
+
+import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
 
 export default function App() {
   const [userLocation, setUserLocation] = useState<LocationData>({
@@ -21,6 +24,10 @@ export default function App() {
 
   const [shelter, setShelter] = useState<ShelterData | null>(null);
   const [isLoadingShelter, setIsLoadingShelter] = useState<boolean>(true);
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState<boolean>(false);
+
+  // Referencja do kontenera z plakatem A4 (wymagana dla html2canvas)
+  const posterRef = useRef<HTMLDivElement | null>(null);
 
   const [config, setConfig] = useState<PosterConfig>({
     template: 'civil_defense',
@@ -66,6 +73,49 @@ export default function App() {
     window.print();
   };
 
+  // OBSŁUGA GENEROWANIA I POBIERANIA PDF
+  const handleDownloadPDF = async () => {
+    if (!posterRef.current) return;
+
+    setIsGeneratingPdf(true);
+
+    try {
+      // Wygenerowanie obrazu z widocznego plakatu
+      const canvas = await html2canvas(posterRef.current, {
+        scale: 2, // Wyższa rozdzielczość
+        useCORS: true,
+        allowTaint: false,
+        backgroundColor: '#ffffff',
+      });
+
+      const imgData = canvas.toDataURL('image/jpeg', 0.98);
+
+      // Utworzenie dokumentu PDF w formacie A4
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4',
+      });
+
+      const pdfWidth = pdf.internal.pageSize.getWidth();   // 210 mm
+      const pdfHeight = pdf.internal.pageSize.getHeight(); // 297 mm
+
+      pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+      pdf.save(`Plakat_Ewakuacyjny_${userLocation.city || 'A4'}.pdf`);
+
+      confetti({
+        particleCount: 50,
+        spread: 70,
+        origin: { y: 0.6 },
+      });
+    } catch (err) {
+      console.error('Błąd podczas generowania pliku PDF:', err);
+      alert('Wystąpił błąd podczas generowania pliku PDF. Sprawdź konsolę.');
+    } finally {
+      setIsGeneratingPdf(false);
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-slate-950 text-slate-100">
       <Header onPrint={handlePrint} />
@@ -81,11 +131,26 @@ export default function App() {
               Wygeneruj Plakat Ewakuacyjny Dla Twojego Adresu
             </h1>
             <p className="text-slate-400 text-xs mt-1 max-w-2xl">
-              Uzupełnij formularz poniżej, a system automatycznie zlokalizuje najbliższy schron lub budowlę ochronną na mapie OpenStreetMap i wygeneruje gotowy plakat A4. Kliknij <kbd className="px-1.5 py-0.5 bg-slate-800 border border-slate-700 rounded text-slate-200 text-[10px] font-mono">Ctrl+P</kbd> lub przycisk "Drukuj Plakat", aby uzyskać idealny wydruk.
+              Uzupełnij formularz poniżej, a system automatycznie zlokalizuje najbliższy schron lub budowlę ochronną na mapie OpenStreetMap i wygeneruje gotowy plakat A4.
             </p>
           </div>
 
           <div className="flex items-center gap-3">
+            {/* PRZYCISK POBIERANIA PDF */}
+            <button
+              onClick={handleDownloadPDF}
+              disabled={isGeneratingPdf || !shelter}
+              className="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-amber-400 font-bold px-5 py-3 rounded-xl border border-slate-700 shadow-lg transition transform active:scale-95 text-sm cursor-pointer whitespace-nowrap disabled:opacity-50"
+            >
+              {isGeneratingPdf ? (
+                <Loader2 className="w-5 h-5 animate-spin text-amber-400" />
+              ) : (
+                <Download className="w-5 h-5 text-amber-400" />
+              )}
+              <span>{isGeneratingPdf ? 'Generowanie...' : 'Pobierz PDF'}</span>
+            </button>
+
+            {/* PRZYCISK DRUKOWANIA */}
             <button
               onClick={handlePrint}
               className="flex items-center gap-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black px-6 py-3 rounded-xl shadow-lg shadow-amber-500/20 transition transform active:scale-95 text-sm cursor-pointer whitespace-nowrap"
@@ -125,9 +190,11 @@ export default function App() {
               )}
             </div>
 
-            {/* THE PRINTABLE A4 POSTER COMPONENT */}
+            {/* THE PRINTABLE A4 POSTER COMPONENT (Z REFERENCJĄ REF) */}
             {shelter ? (
-              <PosterPreview userLocation={userLocation} shelter={shelter} config={config} />
+              <div ref={posterRef} className="w-full flex justify-center">
+                <PosterPreview userLocation={userLocation} shelter={shelter} config={config} />
+              </div>
             ) : (
               <div className="w-[210mm] h-[297mm] bg-slate-900 border border-slate-800 rounded-xl flex items-center justify-center text-slate-500">
                 Ładowanie schronu...
