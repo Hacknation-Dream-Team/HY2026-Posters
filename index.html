@@ -21,20 +21,38 @@
     <!-- Fonty -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 
-    <style>
+<style>
         body {
             font-family: 'Inter', sans-serif;
             margin: 0;
             overflow: hidden; 
+            background-color: #f3f4f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-h-screen: 100vh;
+            height: 100vh;
         }
-        
-        /* Container A4 */
+
+        /* 1. Scaler Wrapper: dynamically adjusts width & height to stay in viewport */
+        .a4-scaler-wrapper {
+            width: min(100vw, calc(90vh * 0.707));
+            height: min(100vh, calc(100vw * 1.414));
+            max-height: 90vh;
+            max-width: calc(90vh * 0.707);
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* 2. Fixed A4 canvas */
         .a4-container {
-            aspect-ratio: 1 / 1.414;
-            max-height: 90vh; 
-            width: auto;
-            margin: 0 auto;
+            width: 794px;
+            height: 1123px;
+            transform-origin: center center;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            flex-shrink: 0;
         }
 
         .hazard-stripes {
@@ -107,12 +125,13 @@
     <main class="w-full md:w-2/3 lg:w-3/4 p-4 bg-gray-300 overflow-y-auto flex justify-center items-start">
         
         <!-- Podgląd plakatu -->
+        <div id="scaler-wrapper" class="a4-scaler-wrapper">
         <div id="poster-preview" class="a4-container bg-white relative flex flex-col border border-gray-200">
             
-            <div class="hazard-stripes h-4 w-full"></div>
+            <div class="hazard-stripes h-4 w-full flex-shrink-0"></div>
             
             <!-- Stały nagłówek plakatu -->
-            <div class="px-8 py-6 bg-white text-center">
+            <div class="px-8 py-6 bg-white text-center flex-shrink-0">
                 <h2 id="poster-title" class="text-3xl lg:text-4xl font-extrabold text-gray-900 uppercase leading-tight tracking-tight">
                     Gdzie się ukryć?
                 </h2>
@@ -127,7 +146,7 @@
             </div>
 
             <!-- Stopka z instrukcjami i adresem -->
-            <div class="bg-gray-50 px-8 py-6 flex flex-col justify-center min-h-[22%] relative">
+            <div class="bg-gray-50 px-8 py-6 flex flex-col justify-center min-h-[22%] relative flex-shrink-0">
                 <!-- Adres z pinezką -->
                 <div class="mb-3 flex items-center gap-2 text-red-600 font-bold text-base">
                     <svg class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
@@ -149,8 +168,9 @@ Zabierz niezbędne dokumenty tożsamości, zapas wody, leki oraz radio na bateri
                 </div>
             </div>
             
-            <div class="hazard-stripes h-4 w-full"></div>
+            <div class="hazard-stripes h-4 w-full flex-shrink-0"></div>
         </div>
+    </div>
 
     </main>
 
@@ -457,6 +477,25 @@ Zabierz niezbędne dokumenty tożsamości, zapas wody, leki oraz radio na bateri
                 }
             });
         });
+
+        function scaleA4() {
+            const wrapper = document.getElementById('scaler-wrapper');
+            const poster = document.getElementById('poster-preview');
+            
+            // Standard A4 reference size in px at ~96 DPI
+            const targetWidth = 794;
+            
+            const scale = wrapper.clientWidth / targetWidth;
+            poster.style.transform = `scale(${scale})`;
+            
+            // Re-render MapLibre/Mapbox map canvas if present
+            if (window.map && typeof window.map.resize === 'function') {
+                window.map.resize();
+            }
+        }
+
+        window.addEventListener('resize', scaleA4);
+        window.addEventListener('DOMContentLoaded', scaleA4);
     </script>
 </body>
 </html>
