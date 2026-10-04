@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kreator Plakatów (MapLibre & Schrony)</title>
+    <title>Generator map schronów</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -88,15 +88,15 @@
                         d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
                     </path>
                 </svg>
-                Generator Map
+                Generator map schronów
             </h1>
-            <p class="text-gray-400 text-sm mt-1">Schrony & Miejsca Ukrycia</p>
+            <p class="text-gray-400 text-sm mt-1">Wygeneruj i wydrukuj mapę dla swojej lokalizacji.</p>
         </div>
 
         <div class="flex-grow space-y-5">
             <!-- WYSZUKIWARKA LOKALIZACJI -->
             <div>
-                <label class="block text-sm font-semibold mb-1 text-gray-300">Wyszukaj lokalizację / miasto</label>
+                <label class="block text-sm font-semibold mb-1 text-gray-300">Adres:</label>
                 <div class="flex gap-2">
                     <input type="text" id="input-location"
                         class="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded focus:outline-none focus:border-red-500 text-white"
@@ -128,7 +128,7 @@
                                 d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
                                 clip-rule="evenodd"></path>
                         </svg>
-                        Pinezka Twojego adresu:
+                        Pinezka dokładnej lokalizacji plakatu:
                     </span>
                     <button id="btn-remove-pin" type="button"
                         class="text-red-400 hover:text-red-300 underline text-[11px] hidden cursor-pointer">Usuń
@@ -193,35 +193,59 @@
                 </div>
 
                 <!-- Stopka z instrukcjami i adresem -->
-                <div class="bg-gray-50 px-8 py-6 flex flex-col justify-center min-h-[22%] relative flex-shrink-0">
+                <div
+                    class="bg-gray-50 px-8 py-4 flex flex-col justify-between min-h-[24%] relative flex-shrink-0 border-t border-gray-200">
                     <!-- Adres z pinezką -->
-                    <div class="mb-3 flex items-center gap-2 text-red-600 font-bold text-base">
-                        <svg class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd"
-                                d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
-                                clip-rule="evenodd"></path>
-                        </svg>
-                        <span id="poster-address" class="uppercase tracking-wide text-gray-900 text-sm">Adres: Kliknij
-                            na mapie, aby postawić pinezkę</span>
+                    <div class="flex items-center justify-between pb-2 border-b border-gray-200">
+                        <div class="flex items-center gap-2 text-red-600 font-bold text-sm min-w-0">
+                            <svg class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
+                                    clip-rule="evenodd"></path>
+                            </svg>
+                            <span
+                                class="uppercase tracking-wide text-gray-900 text-xs font-black flex-shrink-0">Lokalizacja:</span>
+                            <span id="poster-address"
+                                class="uppercase tracking-wide text-gray-800 text-xs font-bold truncate">Kliknij na
+                                mapie, aby postawić pinezkę</span>
+                        </div>
                     </div>
 
-                    <h4 class="text-lg font-bold text-gray-900 mb-2 uppercase flex items-center gap-2">
-                        <svg class="w-5 h-5 text-red-600" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd"
-                                d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
-                                clip-rule="evenodd"></path>
-                        </svg>
-                        Instrukcje:
-                    </h4>
-                    <p id="poster-instructions"
-                        class="text-lg font-semibold text-gray-800 leading-snug whitespace-pre-wrap break-words relative z-10">
-                        W razie ogłoszenia alarmu niezwłocznie udaj się do wyznaczonych schronów.
-                        Zabierz niezbędne dokumenty tożsamości, zapas wody, leki oraz radio na baterie.</p>
+                    <!-- Nagłówek listy 3 najbliższych schronów -->
+                    <div class="my-2 flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <svg class="w-4 h-4 text-orange-600 flex-shrink-0" viewBox="0 0 48 48" fill="none">
+                                <circle cx="24" cy="24" r="22" fill="#f97316" stroke="#000000" stroke-width="2" />
+                                <polygon points="24,10 38,36 10,36" fill="#2563eb" />
+                            </svg>
+                            <h4 class="text-xs font-black text-gray-900 uppercase tracking-wide">
+                                3 Najbliższe schrony / miejsca ochronne:
+                            </h4>
+                        </div>
+                    </div>
 
-                    <div class="mt-4 flex justify-between items-end border-t-2 border-gray-200 pt-3">
-                        <span class="text-xs font-bold text-gray-500 tracking-widest uppercase">Zarządzanie Kryzysowe
-                            RP</span>
-                        <span class="text-xs font-bold text-gray-500" id="current-date"></span>
+                    <!-- Lista 3 najbliższych schronów -->
+                    <div id="nearest-shelters-list" class="grid grid-cols-3 gap-3 my-1">
+                        <div
+                            class="col-span-3 py-6 px-4 text-center bg-white rounded-lg border-2 border-dashed border-gray-300 flex flex-col items-center justify-center gap-1">
+                            <div class="flex items-center gap-2 text-red-600 font-bold text-xs uppercase tracking-wide">
+                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                                <span>Wskaż punkt na mapie lub wpisz adres w panelu</span>
+                            </div>
+                            <p class="text-gray-500 text-[11px]">Po postawieniu pinezki automatycznie zostaną wyznaczone
+                                3 najbliższe schrony wraz z odległością.</p>
+                        </div>
+                    </div>
+
+                    <!-- Dolny pasek z datą i informacją alarmową -->
+                    <div
+                        class="mt-2 pt-2 border-t border-gray-200 flex justify-between items-center text-[10px] font-bold text-gray-500 uppercase tracking-wider">
+                        <span>W razie ogłoszenia alarmu udaj się niezwłocznie do najbliższego schronu</span>
+                        <span id="current-date"></span>
                     </div>
                 </div>
 
@@ -236,7 +260,10 @@
 
             // 1. Ustawienie aktualnej daty
             const dateStr = new Date().toLocaleDateString('pl-PL');
-            document.getElementById('current-date').innerText = `DATA WYDRUKU: ${dateStr}`;
+            const currentDateEl = document.getElementById('current-date');
+            if (currentDateEl) {
+                currentDateEl.innerText = `DATA WYDRUKU: ${dateStr}`;
+            }
 
             // =========================================================================
             // 2. INICJALIZACJA MAPLIBRE GL JS
@@ -301,6 +328,10 @@
                     if (!response.ok) throw new Error("Nie znaleziono pliku schrony.geojson");
 
                     const data = await response.json();
+                    sheltersGeoJsonData = data;
+                    if (currentPushpinCoords) {
+                        renderNearestShelters(currentPushpinCoords.lat, currentPushpinCoords.lng);
+                    }
 
                     // 2. Konwersja SVG na PNG za pomocą Canvas (wymóg MapLibre)
                     const svgString = `
@@ -352,41 +383,41 @@
                     }
 
                     // 5. Warstwa klastrów
-                    if (!map.getLayer('clusters')) {
-                        map.addLayer({
-                            id: 'clusters',
-                            type: 'circle',
-                            source: 'schrony-local',
-                            filter: ['has', 'point_count'],
-                            paint: {
-                                'circle-color': '#f97316',
-                                'circle-radius': [
-                                    'step',
-                                    ['get', 'point_count'],
-                                    16, 100,
-                                    20, 1000,
-                                    26
-                                ],
-                                'circle-stroke-width': 2,
-                                'circle-stroke-color': '#ffffff'
-                            }
-                        });
-                    }
+                    // if (!map.getLayer('clusters')) {
+                    //     map.addLayer({
+                    //         id: 'clusters',
+                    //         type: 'circle',
+                    //         source: 'schrony-local',
+                    //         filter: ['has', 'point_count'],
+                    //         paint: {
+                    //             'circle-color': '#f97316',
+                    //             'circle-radius': [
+                    //                 'step',
+                    //                 ['get', 'point_count'],
+                    //                 16, 100,
+                    //                 20, 1000,
+                    //                 26
+                    //             ],
+                    //             'circle-stroke-width': 2,
+                    //             'circle-stroke-color': '#ffffff'
+                    //         }
+                    //     });
+                    // }
 
                     // 6. Liczba w klastrze
-                    if (!map.getLayer('cluster-count')) {
-                        map.addLayer({
-                            id: 'cluster-count',
-                            type: 'symbol',
-                            source: 'schrony-local',
-                            filter: ['has', 'point_count'],
-                            layout: {
-                                'text-field': '{point_count_abbreviated}',
-                                'text-size': 12
-                            },
-                            paint: { 'text-color': '#ffffff' }
-                        });
-                    }
+                    // if (!map.getLayer('cluster-count')) {
+                    //     map.addLayer({
+                    //         id: 'cluster-count',
+                    //         type: 'symbol',
+                    //         source: 'schrony-local',
+                    //         filter: ['has', 'point_count'],
+                    //         layout: {
+                    //             'text-field': '{point_count_abbreviated}',
+                    //             'text-size': 12
+                    //         },
+                    //         paint: { 'text-color': '#ffffff' }
+                    //     });
+                    // }
 
                     // 7. Pojedyncze punkty schronów z symbolem obrony cywilnej
                     if (!map.getLayer('unclustered-point')) {
@@ -424,9 +455,12 @@
             });
 
             // =========================================================================
-            // 4. OBSŁUGA PINEZKI ADRESU (JEDNA PINEZKA NA MAPIE)
+            // 4. OBSŁUGA PINEZKI ADRESU I NAJBLIŻSZYCH SCHRONÓW
             // =========================================================================
             let pushpinMarker = null;
+            let currentPushpinCoords = null;
+            let sheltersGeoJsonData = null;
+            let nearestShelterMarkers = [];
             let clusterClickHandled = false;
             const posterAddress = document.getElementById('poster-address');
             const pinStatus = document.getElementById('pin-status');
@@ -434,6 +468,179 @@
             const locationInput = document.getElementById('input-location');
             const searchBtn = document.getElementById('btn-search-location');
             const locationError = document.getElementById('location-error');
+
+            // Bezpieczne kodowanie znaków dla HTML
+            function escapeHtml(str) {
+                if (!str) return '';
+                return String(str)
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#039;');
+            }
+
+            // Oblicza odległość po łuku (haversine) w metrach
+            function calculateHaversineDistance(lat1, lon1, lat2, lon2) {
+                const R = 6371000;
+                const toRad = Math.PI / 180;
+                const dLat = (lat2 - lat1) * toRad;
+                const dLon = (lon2 - lon1) * toRad;
+                const a =
+                    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                    Math.cos(lat1 * toRad) * Math.cos(lat2 * toRad) *
+                    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+                const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+                return Math.round(R * c);
+            }
+
+            function formatDistance(meters) {
+                if (meters < 1000) {
+                    return `${meters} m`;
+                }
+                return `${(meters / 1000).toFixed(1)} km`;
+            }
+
+            // Wyszukuje 3 najbliższe schrony z bazy GeoJSON
+            function getThreeNearestShelters(pinLng, pinLat) {
+                if (!sheltersGeoJsonData || !sheltersGeoJsonData.features || sheltersGeoJsonData.features.length === 0) {
+                    return [];
+                }
+
+                const cosLat = Math.cos(pinLat * Math.PI / 180);
+                const top3 = [];
+
+                for (let i = 0; i < sheltersGeoJsonData.features.length; i++) {
+                    const feature = sheltersGeoJsonData.features[i];
+                    if (!feature.geometry || !feature.geometry.coordinates) continue;
+
+                    const coords = feature.geometry.coordinates;
+                    const dx = (coords[0] - pinLng) * cosLat;
+                    const dy = coords[1] - pinLat;
+                    const distSq = dx * dx + dy * dy;
+
+                    if (top3.length < 3) {
+                        top3.push({ feature, distSq, coords });
+                        top3.sort((a, b) => a.distSq - b.distSq);
+                    } else if (distSq < top3[2].distSq) {
+                        top3[2] = { feature, distSq, coords };
+                        top3.sort((a, b) => a.distSq - b.distSq);
+                    }
+                }
+
+                return top3.map((item, index) => {
+                    const c = item.coords;
+                    const distM = calculateHaversineDistance(pinLat, pinLng, c[1], c[0]);
+                    return {
+                        index: index + 1,
+                        feature: item.feature,
+                        coordinates: c,
+                        distanceMeters: distM
+                    };
+                });
+            }
+
+            function clearNearestShelterMarkers() {
+                nearestShelterMarkers.forEach(m => m.remove());
+                nearestShelterMarkers = [];
+            }
+
+            function renderEmptySheltersPlaceholder() {
+                const container = document.getElementById('nearest-shelters-list');
+                if (!container) return;
+                container.innerHTML = `
+                    <div class="col-span-3 py-6 px-4 text-center bg-white rounded-lg border-2 border-dashed border-gray-300 flex flex-col items-center justify-center gap-1">
+                        <div class="flex items-center gap-2 text-red-600 font-bold text-xs uppercase tracking-wide">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span>Wskaż punkt na mapie lub wpisz adres w panelu</span>
+                        </div>
+                        <p class="text-gray-500 text-[11px]">Po postawieniu pinezki automatycznie zostaną wyznaczone 3 najbliższe schrony wraz z odległością.</p>
+                    </div>
+                `;
+            }
+
+            function renderNearestShelters(lat, lng) {
+                const container = document.getElementById('nearest-shelters-list');
+                if (!container) return;
+
+                clearNearestShelterMarkers();
+
+                if (!sheltersGeoJsonData) {
+                    container.innerHTML = `
+                        <div class="col-span-3 py-6 text-center text-gray-500 text-xs font-semibold">
+                            Ładowanie bazy schronów...
+                        </div>
+                    `;
+                    return;
+                }
+
+                const nearest = getThreeNearestShelters(lng, lat);
+                if (!nearest || nearest.length === 0) {
+                    container.innerHTML = `
+                        <div class="col-span-3 py-6 text-center text-gray-500 text-xs font-semibold">
+                            Nie znaleziono schronów w bazie.
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Dodanie znaczników 1, 2, 3 na mapie - małe przesunięte kółka z numerem, zachowujące oficjalny symbol schronu
+                nearest.forEach(item => {
+                    const el = document.createElement('div');
+                    el.className = 'nearest-shelter-map-badge pointer-events-none select-none';
+                    el.innerHTML = `
+                        <div style="
+                            background: #1e3a8a;
+                            color: #ffffff;
+                            font-size: 11px;
+                            font-weight: 900;
+                            width: 18px;
+                            height: 18px;
+                            border-radius: 9999px;
+                            border: 2px solid #ffffff;
+                            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            line-height: 1;
+                        ">${item.index}</div>
+                    `;
+                    const marker = new maplibregl.Marker({ element: el, offset: [14, -14], anchor: 'center' })
+                        .setLngLat(item.coordinates)
+                        .addTo(map);
+                    nearestShelterMarkers.push(marker);
+                });
+
+                // Wygenerowanie 3 kart w stopce
+                container.innerHTML = nearest.map(item => {
+                    const p = item.feature.properties || {};
+                    const address = p.adres || 'Brak dokładnego adresu';
+                    const distStr = formatDistance(item.distanceMeters);
+
+                    return `
+                        <div class="bg-white border-2 border-gray-200 rounded-lg p-3 shadow-sm flex flex-col justify-center hover:border-blue-500 transition-colors">
+                            <div class="flex items-center justify-between gap-1 mb-2">
+                                <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-blue-700 text-white font-black text-xs border border-white shadow-sm flex-shrink-0">
+                                    ${item.index}
+                                </span>
+                                <span class="inline-flex items-center gap-1 bg-gray-100 text-gray-800 border border-gray-300 px-2 py-0.5 rounded text-[11px] font-extrabold tracking-tight">
+                                    <svg class="w-3 h-3 text-gray-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    </svg>
+                                    ${distStr}
+                                </span>
+                            </div>
+
+                            <div class="font-extrabold text-gray-900 text-xs leading-snug line-clamp-2" title="${escapeHtml(address)}">
+                                ${escapeHtml(address)}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
 
             // Oblicza dokładne współrzędne geograficzne z uwzględnieniem skalowania CSS (transform: scale)
             function getMapCoordinatesFromEvent(originalEvent) {
@@ -480,7 +687,7 @@
 
             function updateAddressUI(formattedAddress) {
                 if (posterAddress) {
-                    posterAddress.innerText = `Adres: ${formattedAddress}`;
+                    posterAddress.innerText = formattedAddress;
                 }
                 if (pinStatus) {
                     pinStatus.innerText = formattedAddress;
@@ -495,6 +702,7 @@
             function setPushpin(lngLat, addressText = null) {
                 const lng = typeof lngLat.lng === 'number' ? lngLat.lng : lngLat[0];
                 const lat = typeof lngLat.lat === 'number' ? lngLat.lat : lngLat[1];
+                currentPushpinCoords = { lat, lng };
 
                 if (!pushpinMarker) {
                     const el = createPushpinElement();
@@ -511,18 +719,25 @@
                 if (addressText) {
                     updateAddressUI(addressText);
                 } else {
+                    updateAddressUI(`${lat.toFixed(5)}, ${lng.toFixed(5)}`);
                     reverseGeocode(lat, lng);
                 }
+
+                renderNearestShelters(lat, lng);
             }
 
             // Usunięcie pinezki
             function removePushpin() {
+                currentPushpinCoords = null;
                 if (pushpinMarker) {
                     pushpinMarker.remove();
                     pushpinMarker = null;
                 }
+                clearNearestShelterMarkers();
+                renderEmptySheltersPlaceholder();
+
                 if (posterAddress) {
-                    posterAddress.innerText = 'Adres: Kliknij na mapie, aby postawić pinezkę';
+                    posterAddress.innerText = 'Kliknij na mapie, aby postawić pinezkę';
                 }
                 if (pinStatus) {
                     pinStatus.innerText = 'Kliknij na mapie, aby postawić pinezkę (Twój budynek / adres).';
@@ -540,7 +755,7 @@
             // Wyszukiwanie adresu na podstawie współrzędnych geograficznych (Reverse Geocoding)
             async function reverseGeocode(lat, lon) {
                 if (posterAddress) {
-                    posterAddress.innerText = 'Adres: Sprawdzanie adresu...';
+                    posterAddress.innerText = 'Sprawdzanie adresu...';
                 }
                 if (pinStatus) {
                     pinStatus.innerText = 'Wyszukiwanie adresu...';
@@ -642,6 +857,7 @@
                         const shortAddress = displayName.split(',').slice(0, 3).join(',');
 
                         setPushpin([lon, lat], shortAddress);
+                        updateAddressUI(locationInput.value);
 
                         map.flyTo({
                             center: [lon, lat],
