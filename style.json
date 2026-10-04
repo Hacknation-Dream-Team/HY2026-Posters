@@ -2348,39 +2348,6 @@
       }
     },
     {
-      "id": "road_one_way_arrow",
-      "type": "symbol",
-      "source": "openmaptiles",
-      "source-layer": "transportation",
-      "minzoom": 16,
-      "filter": [
-        "==",
-        "oneway",
-        1
-      ],
-      "layout": {
-        "icon-image": "arrow",
-        "symbol-placement": "line"
-      }
-    },
-    {
-      "id": "road_one_way_arrow_opposite",
-      "type": "symbol",
-      "source": "openmaptiles",
-      "source-layer": "transportation",
-      "minzoom": 16,
-      "filter": [
-        "==",
-        "oneway",
-        -1
-      ],
-      "layout": {
-        "icon-image": "arrow",
-        "symbol-placement": "line",
-        "icon-rotate": 180
-      }
-    },
-    {
       "id": "bridge_motorway_link_casing",
       "type": "line",
       "source": "openmaptiles",
@@ -3599,6 +3566,11 @@
           "<",
           "rank",
           20
+        ],
+        [
+          "!=",
+          "class",
+          "parking"
         ]
       ],
       "layout": {
@@ -3664,6 +3636,11 @@
           "<",
           "rank",
           7
+        ],
+        [
+          "!=",
+          "class",
+          "parking"
         ]
       ],
       "layout": {
@@ -3720,6 +3697,11 @@
           "bus",
           "rail",
           "airport"
+        ],
+        [
+          "!=",
+          "class",
+          "parking"
         ]
       ],
       "layout": {
