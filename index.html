@@ -149,9 +149,9 @@
         </div>
 
         <div class="flex-grow space-y-5">
-            <!-- WYSZUKIWARKA LOKALIZACJI -->
+            <!-- 1. WYSZUKIWARKA LOKALIZACJI -->
             <div>
-                <label class="block text-sm font-semibold mb-1 text-gray-300">Adres:</label>
+                <label class="block text-sm font-semibold mb-1 text-gray-300">1. Podaj adres:</label>
                 <div class="flex gap-2">
                     <input type="text" id="input-location"
                         class="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded focus:outline-none focus:border-red-500 text-white"
@@ -167,44 +167,24 @@
                 <p id="location-error" class="text-xs text-red-400 mt-1 hidden"></p>
             </div>
 
-            <!-- STATUS ŁADOWANIA SCHRONÓW -->
-            <div
-                class="p-3 bg-gray-800 rounded border border-gray-700 text-xs text-gray-300 flex items-center justify-between">
-                <span>Status bazy schronów:</span>
-                <span id="shelters-status" class="font-semibold text-yellow-400">Oczekiwanie...</span>
-            </div>
-
-            <!-- STATUS PINEZKI -->
-            <div class="p-3 bg-gray-800 rounded border border-gray-700 text-xs text-gray-300">
-                <div class="flex items-center justify-between mb-1.5">
-                    <span class="font-semibold flex items-center gap-1.5 text-white">
-                        <svg class="w-4 h-4 text-red-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd"
-                                d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
-                                clip-rule="evenodd"></path>
-                        </svg>
-                        Pinezka dokładnej lokalizacji plakatu:
-                    </span>
-                    <button id="btn-remove-pin" type="button"
-                        class="text-red-400 hover:text-red-300 underline text-[11px] hidden cursor-pointer">Usuń
-                        pinezkę</button>
+            <!-- 2. INSTRUKCJA POSTAWIENIA PINEZKI -->
+            <div>
+                <label class="block text-sm font-semibold mb-1.5 text-gray-300">2. Postaw pinezkę w dokładnej
+                    lokalizacji wywieszanego plakatu</label>
+                <div class="p-3 bg-gray-800 rounded border border-gray-700 text-xs text-gray-400 space-y-1">
+                    <p><strong class="text-gray-300">Przesuwanie widoku:</strong> naciśnij i przytrzymaj lewy przycisk
+                        myszy.</p>
+                    <p><strong class="text-gray-300">Pinezka adresu:</strong> naciśnij przycisk myszy w wybranym miejscu
+                        na
+                        mapie (dostępna jest jedna pinezka).</p>
                 </div>
-                <div id="pin-status" class="text-gray-400">
-                    Kliknij na mapie, aby postawić pinezkę (Twój budynek / adres).
-                </div>
-            </div>
-
-            <div class="p-3 bg-gray-800 rounded border border-gray-700 text-xs text-gray-400 space-y-1">
-                <p><strong class="text-gray-300">Przesuwanie widoku:</strong> naciśnij i przytrzymaj lewy przycisk
-                    myszy.</p>
-                <p><strong class="text-gray-300">Pinezka adresu:</strong> naciśnij przycisk myszy w wybranym miejscu na
-                    mapie (dostępna jest jedna pinezka).</p>
             </div>
         </div>
 
         <div class="mt-6 pt-4 border-t border-gray-700 flex flex-col gap-3">
-            <button id="btn-print"
-                class="w-full bg-blue-600 hover:bg-blue-700 transition-colors text-white font-bold py-3 px-4 rounded shadow-lg flex justify-center items-center gap-2 group cursor-pointer">
+            <label class="block text-sm font-semibold text-gray-300">3.</label>
+            <button id="btn-print" disabled
+                class="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-blue-600 transition-colors text-white font-bold py-3 px-4 rounded shadow-lg flex justify-center items-center gap-2 group cursor-pointer">
                 <span>Wydrukuj</span>
                 <svg class="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor"
                     viewBox="0 0 24 24">
@@ -214,8 +194,8 @@
                 </svg>
             </button>
 
-            <button id="btn-download"
-                class="w-full bg-slate-700 hover:bg-slate-600 border border-slate-600 hover:border-slate-500 transition-colors text-white font-bold py-3 px-4 rounded shadow-lg flex justify-center items-center gap-2 group relative overflow-hidden cursor-pointer">
+            <button id="btn-download" disabled
+                class="w-full bg-slate-700 hover:bg-slate-600 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-slate-700 border border-slate-600 hover:border-slate-500 transition-colors text-white font-bold py-3 px-4 rounded shadow-lg flex justify-center items-center gap-2 group relative overflow-hidden cursor-pointer">
                 <span id="btn-text">Pobierz Plakat (PDF)</span>
                 <svg id="btn-icon" class="w-5 h-5 group-hover:translate-y-1 transition-transform" fill="none"
                     stroke="currentColor" viewBox="0 0 24 24">
@@ -529,11 +509,22 @@
             let nearestShelterMarkers = [];
             let clusterClickHandled = false;
             const posterAddress = document.getElementById('poster-address');
-            const pinStatus = document.getElementById('pin-status');
-            const removePinBtn = document.getElementById('btn-remove-pin');
             const locationInput = document.getElementById('input-location');
             const searchBtn = document.getElementById('btn-search-location');
             const locationError = document.getElementById('location-error');
+            const printBtn = document.getElementById('btn-print');
+            const downloadBtn = document.getElementById('btn-download');
+
+            function updateActionButtonsState() {
+                const hasPin = Boolean(currentPushpinCoords);
+                if (printBtn) {
+                    printBtn.disabled = !hasPin;
+                }
+                if (downloadBtn) {
+                    downloadBtn.disabled = !hasPin;
+                }
+            }
+            updateActionButtonsState();
 
             // Bezpieczne kodowanie znaków dla HTML
             function escapeHtml(str) {
@@ -755,13 +746,6 @@
                 if (posterAddress) {
                     posterAddress.innerText = formattedAddress;
                 }
-                if (pinStatus) {
-                    pinStatus.innerText = formattedAddress;
-                    pinStatus.className = 'text-green-400 font-semibold';
-                }
-                if (removePinBtn) {
-                    removePinBtn.classList.remove('hidden');
-                }
             }
 
             // Ustawia lub aktualizuje pojedynczą pinezkę na mapie
@@ -790,6 +774,7 @@
                 }
 
                 renderNearestShelters(lat, lng);
+                updateActionButtonsState();
             }
 
             // Usunięcie pinezki
@@ -805,27 +790,13 @@
                 if (posterAddress) {
                     posterAddress.innerText = 'Kliknij na mapie, aby postawić pinezkę';
                 }
-                if (pinStatus) {
-                    pinStatus.innerText = 'Kliknij na mapie, aby postawić pinezkę (Twój budynek / adres).';
-                    pinStatus.className = 'text-gray-400';
-                }
-                if (removePinBtn) {
-                    removePinBtn.classList.add('hidden');
-                }
-            }
-
-            if (removePinBtn) {
-                removePinBtn.addEventListener('click', removePushpin);
+                updateActionButtonsState();
             }
 
             // Wyszukiwanie adresu na podstawie współrzędnych geograficznych (Reverse Geocoding)
             async function reverseGeocode(lat, lon) {
                 if (posterAddress) {
                     posterAddress.innerText = 'Sprawdzanie adresu...';
-                }
-                if (pinStatus) {
-                    pinStatus.innerText = 'Wyszukiwanie adresu...';
-                    pinStatus.className = 'text-yellow-400';
                 }
 
                 try {
@@ -955,63 +926,62 @@
             // =========================================================================
             // 5. DRUKOWANIE I GENEROWANIE PLIKU PDF
             // =========================================================================
-            const printBtn = document.getElementById('btn-print');
             if (printBtn) {
                 printBtn.addEventListener('click', () => {
                     window.print();
                 });
             }
 
-            const downloadBtn = document.getElementById('btn-download');
+            if (downloadBtn) {
+                downloadBtn.addEventListener('click', async () => {
+                    downloadBtn.disabled = true;
+                    downloadBtn.classList.add('opacity-75', 'cursor-not-allowed');
+                    document.getElementById('btn-text').style.display = 'none';
+                    document.getElementById('btn-icon').style.display = 'none';
+                    document.getElementById('loader').style.display = 'inline-block';
 
-            downloadBtn.addEventListener('click', async () => {
-                downloadBtn.disabled = true;
-                downloadBtn.classList.add('opacity-75', 'cursor-not-allowed');
-                document.getElementById('btn-text').style.display = 'none';
-                document.getElementById('btn-icon').style.display = 'none';
-                document.getElementById('loader').style.display = 'inline-block';
+                    const posterElement = document.getElementById('poster-preview');
 
-                const posterElement = document.getElementById('poster-preview');
+                    try {
+                        await new Promise((resolve) => {
+                            map.once('render', resolve);
+                            map.triggerRepaint();
+                        });
 
-                try {
-                    await new Promise((resolve) => {
-                        map.once('render', resolve);
-                        map.triggerRepaint();
-                    });
+                        const canvas = await html2canvas(posterElement, {
+                            useCORS: true,
+                            allowTaint: false,
+                            scale: 2,
+                            backgroundColor: '#ffffff'
+                        });
 
-                    const canvas = await html2canvas(posterElement, {
-                        useCORS: true,
-                        allowTaint: false,
-                        scale: 2,
-                        backgroundColor: '#ffffff'
-                    });
+                        const imgData = canvas.toDataURL('image/jpeg', 0.98);
 
-                    const imgData = canvas.toDataURL('image/jpeg', 0.98);
+                        const { jsPDF } = window.jspdf || window;
+                        const pdf = new jsPDF({
+                            orientation: 'portrait',
+                            unit: 'mm',
+                            format: 'a4'
+                        });
 
-                    const { jsPDF } = window.jspdf || window;
-                    const pdf = new jsPDF({
-                        orientation: 'portrait',
-                        unit: 'mm',
-                        format: 'a4'
-                    });
+                        const pdfWidth = pdf.internal.pageSize.getWidth();
+                        const pdfHeight = pdf.internal.pageSize.getHeight();
 
-                    const pdfWidth = pdf.internal.pageSize.getWidth();
-                    const pdfHeight = pdf.internal.pageSize.getHeight();
+                        pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+                        pdf.save('Plakat_Kryzysowy_Schrony.pdf');
 
-                    pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
-                    pdf.save('Plakat_Kryzysowy_Schrony.pdf');
-
-                } catch (err) {
-                    console.error("Błąd generowania PDF:", err);
-                    alert("Nie udało się wygenerować pliku PDF. Sprawdź konsolę deweloperską.");
-                } finally {
-                    downloadBtn.disabled = false;
-                    downloadBtn.classList.remove('opacity-75', 'cursor-not-allowed');
-                    document.getElementById('btn-text').style.display = 'inline';
-                    document.getElementById('btn-icon').style.display = 'inline';
-                    document.getElementById('loader').style.display = 'none';
-                }
-            });
+                    } catch (err) {
+                        console.error("Błąd generowania PDF:", err);
+                        alert("Nie udało się wygenerować pliku PDF. Sprawdź konsolę deweloperską.");
+                    } finally {
+                        downloadBtn.disabled = false;
+                        downloadBtn.classList.remove('opacity-75', 'cursor-not-allowed');
+                        document.getElementById('btn-text').style.display = 'inline';
+                        document.getElementById('btn-icon').style.display = 'inline';
+                        document.getElementById('loader').style.display = 'none';
+                    }
+                });
+            }
         });
 
         function scaleA4() {
