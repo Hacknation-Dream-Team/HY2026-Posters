@@ -174,7 +174,8 @@
                 <div class="p-3 bg-gray-800 rounded border border-gray-700 text-xs text-gray-400 space-y-1">
                     <p><strong class="text-gray-300">Przesuwanie widoku:</strong> naciśnij i przytrzymaj lewy przycisk
                         myszy.</p>
-                    <p><strong class="text-gray-300">Pinezka adresu:</strong> naciśnij przycisk myszy w wybranym miejscu
+                    <p><strong class="text-gray-300">Stawianie pinezki:</strong> kliknij lewy przycisk myszy w wybranym
+                        miejscu
                         na
                         mapie (dostępna jest jedna pinezka).</p>
                 </div>
@@ -182,7 +183,11 @@
         </div>
 
         <div class="mt-6 pt-4 border-t border-gray-700 flex flex-col gap-3">
-            <label class="block text-sm font-semibold text-gray-300">3.</label>
+            <div>
+                <label class="block text-sm font-semibold text-gray-300">3.</label>
+                <p id="actions-hint" class="text-xs text-gray-400 mt-1">Przed zakończeniem tworzenia mapy wybierz adres
+                    i postaw pinezkę.</p>
+            </div>
             <button id="btn-print" disabled
                 class="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-blue-600 transition-colors text-white font-bold py-3 px-4 rounded shadow-lg flex justify-center items-center gap-2 group cursor-pointer">
                 <span>Wydrukuj</span>
@@ -514,6 +519,7 @@
             const locationError = document.getElementById('location-error');
             const printBtn = document.getElementById('btn-print');
             const downloadBtn = document.getElementById('btn-download');
+            const actionsHint = document.getElementById('actions-hint');
 
             function updateActionButtonsState() {
                 const hasPin = Boolean(currentPushpinCoords);
@@ -522,6 +528,13 @@
                 }
                 if (downloadBtn) {
                     downloadBtn.disabled = !hasPin;
+                }
+                if (actionsHint) {
+                    if (hasPin) {
+                        actionsHint.classList.add('hidden');
+                    } else {
+                        actionsHint.classList.remove('hidden');
+                    }
                 }
             }
             updateActionButtonsState();
